@@ -15,8 +15,22 @@
         <button onclick="save()">Save</button>
     </header>
     <main>
+        <div id="alert">
+            <p>Changes saved!&#9989;</p>
+        </div>
+        <div id="instructions">
+            <h3>Welcome to the Chem editor</h3>
+            <p>The rules are:</p>
+            <ul>
+                <li>use " at the begining and end of a chemical equation</li>
+                <li>Type out plus and equals</li>
+                <li>Use the bold and italic buttons to format text</li>
+                <li>Access other files through the button files</li>
+                <li>Don't forget to hit save</li>
+            </ul>
+        </div>
         <div id="editor" >
-        <div id="input" contenteditable="true">
+        <div id="input" class="blur" contenteditable="true">
         </div>
         </div>
     </main>

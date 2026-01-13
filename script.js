@@ -54,7 +54,14 @@ async function save() {
     let stream = await fileHandle.createWritable();
     await stream.write(textArea.textContent);
     await stream.close();
-    window.alert("Changes saved!");
+
+    let saveNotif = document.getElementById("alert");
+    saveNotif.style.display = "block";
+    
+    setTimeout(()=>{
+        saveNotif.style.display = "none";
+    }, 1300)
+
 }
 
 
@@ -215,3 +222,12 @@ function isAlphabet(chr) {
         return true
     } 
 }
+
+
+
+// Notifications
+
+// rules notifications
+setTimeout(() => {
+    textArea.classList.add("unblur");
+}, 2000);
