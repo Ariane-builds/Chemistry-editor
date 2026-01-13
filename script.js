@@ -8,11 +8,12 @@ let formattedEquation = ""
 let insideQuotes = false;
 let isBold = false;
 
+// Accessing and saving file document
+
 let fileHandle;
 
-
 async function openFiles() {
-   let [fileHandle] = await window.showOpenFilePicker( {
+   [fileHandle] = await window.showOpenFilePicker( {
     types: [
       {
         description: "HTML or Text",
@@ -25,6 +26,7 @@ async function openFiles() {
   });
    let fileData = await fileHandle.getFile();
    let text = await fileData.text();
+   console.log(text);
    textArea.innerHTML = text;
 }
 
@@ -50,20 +52,40 @@ async function save() {
     }
 
     let stream = await fileHandle.createWritable();
-    await stream.write(textArea.innerHTML);
+    await stream.write(textArea.textContent);
     await stream.close();
+    window.alert("Changes saved!");
 }
 
-textArea.addEventListener("input", function() {
-    const currentPlace = textArea.selectionStart;
-    const text = textArea.value;
 
-    let currentIndex = currentPlace - 1;
+// formatting general text
+function bolden() {
+  document.execCommand("bold");
+  console.log("has been bolden!");
+}
+
+function italicize() {
+  document.execCommand("italic");
+  console.log("Italicized!");
+}
+
+
+
+// Format according to chemistry
+
+// Keep track of "" added to input
+textArea.addEventListener("input", function() {
+    const text = textArea.textContent;
+    const place = getCaretIndex(textArea);
+
+    const currentIndex = place - 1;
+
     if (currentIndex < 0) {
         return;
     }
 
-    let currentChar = text[currentIndex];
+    const currentChar = text[currentIndex];
+
 
     if (currentChar == '"' && insideQuotes == false) {
         insideQuotes = true;
@@ -77,31 +99,60 @@ textArea.addEventListener("input", function() {
         equation = text.slice(startPosition + 1, endPosition - 1);
         formattedEquation = findWords(equation);
         console.log(formattedEquation);
-        textArea.value = text.slice(0, startPosition) + formattedEquation + text.slice(endPosition);
-        equation = "";
+        textArea.textContent = text.slice(0, startPosition) + formattedEquation + text.slice(endPosition);
+        
+        const newCaret = startPosition + formattedEquation.length;
+        setCaretIndex(textArea, newCaret);
     }
     
-
-} );
-
-boldButton. addEventListener("click", function () {
-    bolden();
-});
+}
+);
 
 
-// let text = "feso4 plus h20 equals fe03 plus h2";
 
+// selected text
 
-function isAlphabet(chr) {
-    if (chr >="A" && chr <= "Z") {
-        return true
-    } 
-    
-    if (chr >="a" && chr <= "z") {
-        return true
-    } 
+function getCaretIndex(el) {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return 0;
+
+  const range = sel.getRangeAt(0).cloneRange();
+  range.selectNodeContents(el);
+  range.setEnd(sel.getRangeAt(0).endContainer, sel.getRangeAt(0).endOffset);
+
+  return range.toString().length;
 }
 
+function setCaretIndex(el, index) {
+  const range = document.createRange();
+  const sel = window.getSelection();
+
+  let current = 0;
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+
+  let node = walker.nextNode();
+  while (node) {
+    const next = current + node.textContent.length;
+    if (index <= next) {
+      range.setStart(node, index - current);
+      range.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(range);
+      el.focus();
+      return;
+    }
+    current = next;
+    node = walker.nextNode();
+  }
+
+  // fallback: place at end
+  el.focus();
+}
+
+
+
+
+// format equation input accordingly
 function findWords(text) {
     let finalSentence = "";
     let word = "";
@@ -155,39 +206,12 @@ function findWords(text) {
     return finalSentence;
 }
 
-
-function bolden() {
-    let selection = window.getSelection();
-    if (selection.isCollapsed) {
-        textArea.focus();
-        return;
-    }
-
-    const range = selection.getRangeAt(0);
-
-    const selectedText = range.extractContents();
-
-    if (selectedText.length > 0) {
-        if (isBold == false) {
-            const boldTag = document.createElement("b");
-            boldTag.appendChild(selectedText);
-            range.insertNode(boldTag);
-            console.log(selectedText);
-            range.setStartAfter(boldTag);
-            range.collapse(true);
-            selection.removeAllRanges();
-            selection.addRange(range);
-            console.log(boldTag);
-            isBold = !isBold
-            
-        } else {
-            range.insertNode(selectedText);
-            range.collapse(false);
-            selection.removeAllRanges();
-            selection.addRange(range);
-
-            isBold = !isBold;
-        }
-    }
-
+function isAlphabet(chr) {
+    if (chr >="A" && chr <= "Z") {
+        return true
+    } 
+    
+    if (chr >="a" && chr <= "z") {
+        return true
+    } 
 }

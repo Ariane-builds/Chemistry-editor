@@ -11,12 +11,13 @@
     <header>
         <button onclick="openFiles()" id="files">Files</button>
         <button onclick="bolden()" id="bold">Bold</button>
-        <button>Italic</button>
+        <button onclick="italicize()">Italic</button>
         <button onclick="save()">Save</button>
     </header>
     <main>
-        <div id="editor" contenteditable="true">
-            <textarea name="text" id="input"></textarea>
+        <div id="editor" >
+        <div id="input" contenteditable="true">
+        </div>
         </div>
     </main>
 </body>
