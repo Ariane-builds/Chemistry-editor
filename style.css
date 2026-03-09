@@ -103,7 +103,7 @@ p{
 
 #input {
     border: 0px;
-    width: 100%;
+    width: 100%; 
     min-height: 100%;
     height: auto;
     padding: 1rem;
@@ -120,12 +120,19 @@ p{
 
 
 #editor{
+    box-sizing: border-box;
     border: 2px black solid;
     width: 90%;
-    height: 90vh;
+    height: 85vh;
+    overflow-y: auto; 
+    overflow-x:hidden; 
     border-radius: 10px;
-    overflow: hidden;
+    /* overflow: hidden; */
     margin: 0px auto;
+}
+
+#editor img{
+    max-width: 15%;
 }
 
 button{

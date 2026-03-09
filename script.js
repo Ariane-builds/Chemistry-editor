@@ -1,7 +1,8 @@
 const textArea = document.getElementById("input");
 const instructions = document.getElementById("instructions");
-const boldButton = document.getElementById("bold");
+const insertButton = document.getElementById("insert");
 const helpButton = document.getElementById("help");
+
 
 let startPosition = 0;
 let endPosition = 0;
@@ -81,6 +82,31 @@ function italicize() {
   document.execCommand("italic");
   console.log("Italicized!");
 }
+
+document.addEventListener("paste", (event)=>{
+    let items = event.clipboardData.items;
+
+    for (let i = 0; i < items.length; i++) {
+
+        if (items[i].type.indexOf("image") !== -1) {
+
+            let file = items[i].getAsFile();
+
+            let reader = new FileReader();
+
+            reader.onload = function(e) {
+
+                let img = document.createElement("img");
+                img.src = e.target.result;
+                img.style.maxWidth = "30px";
+
+                document.getElementById("editor").appendChild(img);
+            };
+
+            reader.readAsDataURL(file);
+        }
+    }
+})
 
 
 
@@ -222,6 +248,9 @@ function formatEquation(text) {
     return finalSentence;
 }
 
+function insert() {
+
+}
 
 textArea.addEventListener("keydown", (event) => {
     if (event.ctrlKey && event.shiftKey && event.code === "Digit8") {
